@@ -1,0 +1,139 @@
+
+
+            LOW-PRECISION ARITHMETIC CODING IMPLEMENTATION
+
+                          Radford M. Neal
+
+
+                    Initial release:  8 July 1991
+               Documentation update: 16 July 1991
+                            Bug fix: 25 July 1991
+                            Bug fix: 16 Sept 1992
+   Changes for ANSI C compatibility: 29 October 1992
+                            Bug fix: 19 May 1993
+
+
+This directory contains C source for an implementation of arithmetic
+coding using low-precision division. This division can be performed
+using shift/add operations, with potential savings in time on any
+machine without parallel multiply/divide hardware.
+
+The implementation is based on that in the paper of Witten, Neal, and
+Cleary published in the June 1987 Communications of the ACM. Anyone
+wishing to understand this program is urged to first read that paper.
+Differences in this version are as follows:
+
+    1) The arithmetic coding operations have been fiddled so that
+       the division involved can be done to very low precision.
+       There is a tradeoff between precision and compression performance,
+       but nearly optimal results are obtained with a precision of
+       six bits, and precisions of as low as three bits give reasonable 
+       results. A precision of at least two bits is required for
+       correct operation.
+
+    2) In order for (1) to be possible, the model is now required
+       to produce "partially normalized" frequencies, in which the
+       total for all symbols is always more than half the maximum 
+       allowed total. This is not onerous, at least for the models
+       used here.
+
+    3) The model must also now arrainge for the most probable symbol
+       to have index 1. This was always the case, but previously
+       this was solely a matter of time efficiency. Now, failure
+       to do this would impact compression efficiency, though not 
+       correct operation.
+
+    4) The precision to which symbol frequencies may be held is much
+       higher in this implementation - 27 bits with the default
+       parameter settings. The CACM implementation was restricted
+       to 14 bit frequencies. This is of significance in applications
+       where the number of symbols is large, such as with word-based
+       models.
+
+    5) Encode/decode procedures specialized for use with a two-symbol
+       alphabet have been added. These are demonstrated by a simple
+       adaptive image compression program.
+
+    6) Various minor modifications and structural changes to the
+       program have been made.
+
+Two versions of the coding procedures are provided - one using C
+multiply and divide operators, the other using shifts and adds. These
+versions, and the resulting encode/decode programs, are distinguished
+by the suffixes "_mul" and "_sft". Which version is fastest will
+depend on the particular machine and compiler used. All encode/decode
+programs simply read from standard input and write to standard output.
+
+The file 'tstpic' contains a test picture for the image
+encoding/decoding programs. The format of such pictures may be
+discerned by examination of this example, and of the program code.
+
+A program for calculating a bound on maximum expected redundancy 
+resulting from low-precision division is included. Typical redundancy
+is much less than this bound.
+
+For the multiply/divide version, the requirement that the model
+produce partially normalized frequencies is not really necessary.
+
+The program is intended for demonstation purposes. It is not optimized
+for time efficiency, and provides little in the way of error checking.
+
+The method used in this program has some resemblences to that presented
+by Rissanen and Mohiuddin in "A Multiplication-Free Multialphabet Arithmetic
+Code", IEEE Transactions on Communications, February, 1989. The main
+similarities are the following:
+
+     1) The idea of constraining the size of the coding region and the
+        range of the occurrence counts so as to allow an approximation.
+
+     2) The placement of the most-probable symbol at the top of the
+        coding region.
+
+There are a number of significant dissimilarities, however. The details
+of the constraints mentioned above are different. The low-precision
+method implemented here is more general, giving a smooth trade-off between
+compression performance and speed through choice of precision for the
+multiplication and division. Other unique features of this code include:
+
+     1) Incremental maintenance of partialy-normalized occurrence counts,
+        eliminating the need for such normalization in the coding process,
+        as is the case with the Rissanen and Mohiuddin method.
+
+     2) Merging of multiply and divide operations for faster operation
+        with serial arithmetic (not relevant in the less-general Rissanen 
+        and Mohiuddin method).
+
+     3) A variable-precision computation in order to locate the next
+        symbol in the non-binary decode procedure (also not relevant in
+        the Rissanen and Mohiuddin method).
+
+The Rissanen and Mohiuddin method should be somewhat faster than that
+used here. Its coding efficiency appears similar to that which would be
+obtained with this method if divisions are performed to a precision of 
+two bits.
+
+The detailed algorithm presented in the paper by Rissanen and Mohiuddin
+uses the supposedly patented "bit stuffing" procedure. This procedure
+is _not_ used in this code. 
+
+This code is public domain, and may be used by anyone for any purpose.
+I do, however, expect that distributions utilizing this code will
+include an acknowledgement of its source. The program is provided
+without any warranty as to correct operation. The Rissanen and
+Mohiuddin method is said to be patented, and I can offer no guarantees
+as to whether use of the code presented here might infringe those
+patents (off hand, this would seem to be a complex question with no
+definitive answer). My amateur understanding of patent law leads me to
+believe that use for research purposes would be permitted under any
+circumstances, but I could well be deluded in this regard.
+
+Address comments to:    
+   
+       Radford Neal
+       Dept. of Computer Science
+       University of Toronto
+       10 King's College Road
+       Toronto, Ontario, CANADA
+       M5S 1A4
+
+       e-mail: radford@ai.toronto.edu
