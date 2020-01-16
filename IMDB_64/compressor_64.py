@@ -35,14 +35,10 @@ class compress(object):
 		print(w1.shape[0], w1.shape[1])
 		print(w2.shape[0], w2.shape[1])
 		print(w3.shape[0], w3.shape[1])
-		self.node_w1 = Node(w1.shape[1],65,-1)
-		self.node_w2 = Node(w2.shape[1],65,-1)
-		self.node_w3 = Node(w3.shape[1],65,-1)
+
 		comp_net = Compressor()
-		sys.setrecursionlimit(1500)
-		comp_net.formTree(self.node_w1,w1l,0,65)
-		comp_net.formTree(self.node_w2,w2l,0,65)
-		L1 = comp_net.compressTree(self.node_w1, frequencies, w1.shape[1])
+
+		L1 = comp_net.form_and_compress_tree(w1l, 65, frequencies)
 		expected_length = (w1.shape[0]*w1.shape[1])
 		print('M = ',w1.shape[0], 'N = ',w1.shape[1])
 		print('Expected Length WITHOUT compression for sets = ', expected_length*entropy)
@@ -50,7 +46,7 @@ class compress(object):
 		print('Actual Length = ', len(L1))
 		self.comp_weight1 = L1
 
-		L2 = comp_net.compressTree(self.node_w2, frequencies, w2.shape[1])
+		L2 = comp_net.form_and_compress_tree(w2l, 65, frequencies)
 		expected_length = (w2.shape[0]*w2.shape[1])
 		print('M = ',w2.shape[0], 'N = ',w2.shape[1])
 		print('Expected Length WITHOUT compression for sets = ', expected_length*entropy)
