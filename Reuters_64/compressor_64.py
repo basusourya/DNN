@@ -6,6 +6,8 @@ import h5py
 from utils_64 import utilClass as u
 from math import log2
 from os import sys
+import time
+
 class compress(object):
 	uc = u()
 	comp_weight1 = 0
@@ -38,8 +40,13 @@ class compress(object):
 		print(w3.shape[0], w3.shape[1])
 
 		comp_net = Compressor()
-		
+		start_time = time.time()
 		L1 = comp_net.form_and_compress_tree(w1l, 65, frequencies)
+		L2 = comp_net.form_and_compress_tree(w2l, 65, frequencies)
+		end_time = time.time()
+		
+		print("Time taken for compression:", end_time - start_time)
+
 		expected_length = (w1.shape[0]*w1.shape[1])
 		print('M = ',w1.shape[0], 'N = ',w1.shape[1])
 		print('Expected Length WITHOUT compression for sets = ', expected_length*entropy)
@@ -47,7 +54,7 @@ class compress(object):
 		print('Actual Length = ', len(L1))
 		self.comp_weight1 = L1
 
-		L2 = comp_net.form_and_compress_tree(w2l, 65, frequencies)
+		
 		expected_length = (w2.shape[0]*w2.shape[1])
 		print('M = ',w2.shape[0], 'N = ',w2.shape[1])
 		print('Expected Length WITHOUT compression for sets = ', expected_length*entropy)

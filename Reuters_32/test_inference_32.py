@@ -197,6 +197,35 @@ class inference(object):
 		i = 0
 		end_time = time.time()
 		print('Average time taken for Inference', (end_time - start_time)/(i+1))
+		start_time = time.time()
+		
+		i = x_np.size
+		(j,k) = w1.shape
+		h1_linear = [0 for l in range(k)]
+		for kk in range(k):
+			for ii in range(i):
+				
+				h1_linear[kk] = h1_linear[kk] + x_np[ii]*w1[ii,kk]
+
+		h1_linear_np = np.array(h1_linear)
+		h1 = self.uc.ReLU(h1_linear_np)
+
+		i = h1.size
+		(j,k) = w2.shape
+		h2_linear = [0 for l in range(k)]
+		for kk in range(k):
+			for ii in range(i):
+				
+				h2_linear[kk] = h2_linear[kk] + h1[ii]*w2[ii,kk]
+
+		h2_linear_np = np.array(h2_linear)
+		h2 = self.uc.ReLU(h2_linear_np)
+
+		o = self.uc.sigmoid(h2*w3)
+
+		end_time = time.time()
+		t = end_time - start_time
+		print("Time without compression = ", t)
 
 		print('avg_queue_length1', avg_avg_queue_length1/(i+1))
 		print('avg_queue_length2', avg_avg_queue_length2/(i+1))

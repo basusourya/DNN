@@ -3,6 +3,7 @@ from encoder import encoders as ec
 from collections import deque
 from utils_64 import utilClass as uc
 import arithmeticcoding
+import time
 
 class Compressor(object):
 	j = 0
@@ -38,7 +39,10 @@ class Compressor(object):
 		enc = arithmeticcoding.ArithmeticEncoder()
 		newScalarNode = scalarNode(len(w), -1, 0, len(w), 0)
 		q = deque([newScalarNode])
-
+		t_1 = 0
+		t_2 = 0
+		t_21 = 0
+		start_time_overall = time.time()
 		while len(q)!=0: 
 			
 			temp_node = q.popleft()
@@ -64,9 +68,15 @@ class Compressor(object):
 							aggCount = aggCount+count[j] #constraint on l since for any given l the child nodes are being encoded
 							if count[j] > 0 and l < len(w[0])-1:
 								q.append(newScalarNode)
+							start_time_1 = time.time()
 							binomial_frequencies = ec().binomial_encoder_frequencies(overall_freqs[j:], v) #can speed be improved here
 							freqs = arithmeticcoding.SimpleFrequencyTable(binomial_frequencies)
+							end_time_1 = time.time()
+							t_1 = t_1 + (end_time_1 - start_time_1)
+							start_time_2 = time.time()
 							enc.write(freqs, count[j])
+							end_time_2 = time.time()
+							t_2 = t_2 + (end_time_2 - start_time_2)
 							v = v - count[j]
 				elif v==1:
 					for j in range(k):
@@ -75,10 +85,20 @@ class Compressor(object):
 							aggCount = aggCount+count[j] #constraint on l since for any given l the child nodes are being encoded
 							if count[j] > 0 and l < len(w[0])-1:
 								q.append(newScalarNode)
+							start_time_1 = time.time()
 							freqs = arithmeticcoding.SimpleFrequencyTable(overall_freqs)
+							end_time_1 = time.time()
+							t_1 = t_1 + (end_time_1 - start_time_1)
+							start_time_21 = time.time()
 							enc.write(freqs, j)
+							end_time_21 = time.time()
+							t_21 = t_21 + (end_time_21 - start_time_21)
 
-
+		end_time_overall = time.time()
+		print("Time for form_and_compress_tree:", end_time_overall - start_time_overall)
+		print("Time for computing distribution:",t_1)
+		print("Time for encoding:",t_2)
+		print("Time for encoding next:",t_21)
 		compressed_tree = enc.finish()
 		return compressed_tree
 

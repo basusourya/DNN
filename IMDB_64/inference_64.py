@@ -28,6 +28,7 @@ class DNNInference(object):
 		flagp = 0
 		k = len(overall_freqs)
 		print('M:',M,'N:',N)
+
 		while len(q)!=0 and level < M:
 			currentNodeValue = q.popleft()
 			current_queue_length -= floor(2*log2(currentNodeValue+1)+1)
@@ -46,7 +47,7 @@ class DNNInference(object):
 					#	print('Not Matching!', childNodeValue, currentnode.childNodes[c].v)
 					#else:
 					#	print('No problems here')
-					enc.write(freqs, childNodeValue)
+					#enc.write(freqs, childNodeValue)
 					currentNodeValue -= childNodeValue
 					q.append(childNodeValue)
 					current_queue_length += floor(2*log2(childNodeValue+1)+1)
