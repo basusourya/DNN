@@ -150,6 +150,9 @@ class inference(object):
 
 		i = 0
 		end_time = time.time()
+		t = end_time - start_time
+		print("Average time for compressed inference:",t)
+		
 		start_time = time.time()
 		
 		i = x_np.size

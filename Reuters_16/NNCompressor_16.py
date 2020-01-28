@@ -3,6 +3,7 @@ from encoder import encoders as ec
 from collections import deque
 from utils_16 import utilClass as uc
 import arithmeticcoding
+import time
 
 class Compressor(object):
 	j = 0
