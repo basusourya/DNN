@@ -89,16 +89,16 @@ class Compressor(object):
 							freqs = arithmeticcoding.SimpleFrequencyTable(overall_freqs)
 							end_time_1 = time.time()
 							t_1 = t_1 + (end_time_1 - start_time_1)
-							start_time_21 = time.time()
+							start_time_2 = time.time()
 							enc.write(freqs, j)
-							end_time_21 = time.time()
-							t_21 = t_21 + (end_time_21 - start_time_21)
+							end_time_2 = time.time()
+							t_2 = t_2 + (end_time_2 - start_time_2)
 
 		end_time_overall = time.time()
-		print("Time for form_and_compress_tree:", end_time_overall - start_time_overall)
-		print("Time for computing distribution:",t_1)
+		#print("Time for form_and_compress_tree:", end_time_overall - start_time_overall)
+		#print("Time for computing distribution:",t_1)
 		print("Time for encoding:",t_2)
-		print("Time for encoding next:",t_21)
+		#print("Time for encoding next:",t_21)
 		compressed_tree = enc.finish()
 		return compressed_tree
 

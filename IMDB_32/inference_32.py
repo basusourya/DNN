@@ -8,6 +8,7 @@ import arithmeticcoding
 import numpy as np
 from NNCompressor_32 import Compressor as c
 from math import log2, ceil, floor
+import time
 
 
 class DNNInference(object):
@@ -17,6 +18,12 @@ class DNNInference(object):
 		enc = arithmeticcoding.ArithmeticEncoder()
 		dec = arithmeticcoding.ArithmeticDecoder(L)
 		q = deque([N])
+		t_1 = 0
+		t_2 = 0
+		t_3 = 0
+		t_overall = 0
+
+		start_time_overall = time.time()
 		#q_node = deque([node])
 		self.w = 0
 		tot_queue_length = floor(2*log2(N+1)+1)
@@ -39,14 +46,23 @@ class DNNInference(object):
 			if currentNodeValue > 1:
 				c = 0     						#colour initialized with 0
 				while c <= k-1 and currentNodeValue > 0: #kth colour need not be encoded
+					start_time_1 = time.time()
 					binomial_frequencies = ec().binomial_encoder_frequencies(overall_freqs[c:], currentNodeValue)
 					freqs = arithmeticcoding.SimpleFrequencyTable(binomial_frequencies)
+					end_time_1 = time.time()
+					t_1 = t_1 + (end_time_1 - start_time_1)
+					start_time_2 = time.time()
 					childNodeValue = dec.read(freqs)
+					end_time_2 = time.time()
+					t_2 = t_2 + (end_time_2 - start_time_2)
 					#if childNodeValue != currentnode.childNodes[c].v:
 					#	print('Not Matching!', childNodeValue, currentnode.childNodes[c].v)
 					#else:
 					#	print('No problems here')
+					start_time_3 = time.time()
 					enc.write(freqs, childNodeValue)
+					end_time_3 = time.time()
+					t_3 = t_3 + (end_time_3 - start_time_3)
 					currentNodeValue -= childNodeValue
 					q.append(childNodeValue)
 					current_queue_length += floor(2*log2(childNodeValue+1)+1)
@@ -71,9 +87,21 @@ class DNNInference(object):
 						#print('level:',level)
 						flag = 0
 			elif currentNodeValue == 1:
+				start_time_1 = time.time()
 				freqs = arithmeticcoding.SimpleFrequencyTable(overall_freqs)
+				end_time_1 = time.time()
+				t_1 = t_1 + (end_time_1 - start_time_1)
+
+				start_time_2 = time.time()
 				c = dec.read(freqs)
+				end_time_2 = time.time()
+				t_2 = t_2 + (end_time_2 - start_time_2)
+
+				start_time_3 = time.time()
 				enc.write(freqs, c)
+				end_time_3 = time.time()
+				t_3 = t_3 + (end_time_3 - start_time_3)
+
 				q.append(1)
 				current_queue_length += 3
 				max_queue_length = max(max_queue_length, current_queue_length)
@@ -85,8 +113,13 @@ class DNNInference(object):
 				if j == 0:
 					level += 1
 
+		end_time_overall = time.time()
+		t_overall = end_time_overall - start_time_overall
 		avg_queue_length = tot_queue_length/self.w
-
+		print("pmf computation:", t_1)
+		print("decoding time:", t_2)
+		print("reencoding time:", t_3)
+		print("overall time:", t_overall)
 		L1 = enc.finish() #return L1 if needed
 		y = np.array(y)
 		if activationFunction == 'ReLU':
